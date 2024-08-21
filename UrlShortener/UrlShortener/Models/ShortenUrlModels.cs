@@ -28,3 +28,5 @@ internal sealed class ShortenUrlRequestValidator : AbstractValidator<ShortenUrlR
                && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
     }
 }
+
+internal sealed record ShortenUrlResponse(string Key, string LongUrl, string ShortUrl);

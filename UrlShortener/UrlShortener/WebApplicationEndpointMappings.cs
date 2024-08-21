@@ -7,7 +7,7 @@ internal static class WebApplicationEndpointMappings
 {
     public static void MapEndpoints(this WebApplication app)
     {
-        app.MapPost("/shortenurl", (ShortenUrlRequest request) =>
+        app.MapPost("/shortenurl", (ShortenUrlRequest request, HttpContext context) =>
         {
             // Should inject the validator
             var validator = new ShortenUrlRequestValidator();
@@ -19,8 +19,11 @@ internal static class WebApplicationEndpointMappings
             }
 
             var hashedValue = HashComputer.GetHashString(request.Url);
+            var shortAddress = $"http://{context.Request.Host}/{hashedValue}";
 
-            return Results.Ok(hashedValue);
+            var response = new ShortenUrlResponse(hashedValue, request.Url, shortAddress);
+
+            return Results.Ok(response);
             
         })
         .WithName("ShortenUrl")
