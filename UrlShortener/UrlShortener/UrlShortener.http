@@ -1,6 +1,11 @@
 @UrlShortener_HostAddress = http://localhost:5173
 
-GET {{UrlShortener_HostAddress}}/weatherforecast/
+# Create shortened url - input string is not a valid url
+POST {{UrlShortener_HostAddress}}/shortenurl
 Accept: application/json
+
+{
+    "url": "test",
+}
 
 ###
