@@ -4,6 +4,6 @@ namespace UrlShortener.Persistance;
 
 public interface IRedisService
 {
-    public void InsertKey(string key, ShortenedUrl value);
-    public ShortenedUrl GetValue(string key);
+    public Task InsertKeyAsync(string key, ShortenedUrl value, CancellationToken token = default);
+    public Task<ShortenedUrl> GetValueAsync(string key, CancellationToken token = default);
 }

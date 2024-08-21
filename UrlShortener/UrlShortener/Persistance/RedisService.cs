@@ -7,21 +7,20 @@ public class RedisService : IRedisService
 {
     private readonly RedisManagerPool _manager;
 
-    //ADD TO DI!
     public RedisService()
     {
         _manager = new RedisManagerPool("localhost:6379");
     }
 
-    public void InsertKey(string key, ShortenedUrl value)
+    public async Task InsertKeyAsync(string key, ShortenedUrl value, CancellationToken token = default)
     {
-        using var redis = _manager.GetClient();
-        redis.Add(key, value);
+        await using var redis = await _manager.GetClientAsync(token);
+        await redis.AddAsync(key, value, token);
     }
 
-    public ShortenedUrl GetValue(string key)
+    public async Task<ShortenedUrl> GetValueAsync(string key, CancellationToken token = default)
     {
-        using var redis = _manager.GetClient();
-        return redis.Get<ShortenedUrl>(key);
+        await using var redis = await _manager.GetClientAsync(token);
+        return await redis.GetAsync<ShortenedUrl>(key, token);
     }
 }

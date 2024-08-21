@@ -15,17 +15,16 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapPostEndpoints(this WebApplication app)
     {
-        app.MapPost("/shortenurl", 
-            (
+        app.MapPost("/shortenurl",
+            async (
                 ShortenUrlRequest request,
+                CancellationToken token,
                 HttpContext context,
                 IRedisService redisService,
                 IValidator<ShortenUrlRequest> validator
             ) =>
         {
-            // Should inject the validator
-            // Exceptions
-            // Async
+            // Exception handling
             var validationResult = validator.Validate(request);
 
             if (!validationResult.IsValid)
@@ -34,11 +33,11 @@ internal static class WebApplicationEndpointMappings
             }
 
             var urlHash = HashComputer.GetHashString(request.Url);
-            var hashedValue = urlHash.Substring(0, 6);
+            var hashedValue = urlHash[..6];
             var shortAddress = $"http://{context.Request.Host}/{hashedValue}";
 
             var response = new ShortenedUrl(hashedValue, request.Url, shortAddress);
-            redisService.InsertKey(shortAddress, response);
+            await redisService.InsertKeyAsync(shortAddress, response, token);
 
             return Results.Ok(response);
 
@@ -49,14 +48,14 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
-        app.MapGet("/shortenedurl", (string url, IRedisService redisService) =>
+        app.MapGet("/shortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
         {
             if (string.IsNullOrWhiteSpace(url))
             {
                 return Results.BadRequest("Url was empty.");
             }
 
-            var response = redisService.GetValue(url);
+            var response = await redisService.GetValueAsync(url, token);
 
             return Results.Ok(response);
 
