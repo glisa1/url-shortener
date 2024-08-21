@@ -29,4 +29,4 @@ internal sealed class ShortenUrlRequestValidator : AbstractValidator<ShortenUrlR
     }
 }
 
-internal sealed record ShortenUrlResponse(string Key, string LongUrl, string ShortUrl);
+public sealed record ShortenedUrl(string Key, string LongUrl, string ShortUrl);
