@@ -18,7 +18,8 @@ internal static class WebApplicationEndpointMappings
                 return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
-            var hashedValue = HashComputer.GetHashString(request.Url);
+            var urlHash = HashComputer.GetHashString(request.Url);
+            var hashedValue = urlHash.Substring(0, 6);
             var shortAddress = $"http://{context.Request.Host}/{hashedValue}";
 
             var response = new ShortenUrlResponse(hashedValue, request.Url, shortAddress);

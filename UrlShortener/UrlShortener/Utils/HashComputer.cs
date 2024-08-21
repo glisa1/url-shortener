@@ -9,7 +9,7 @@ public static class HashComputer
     {
         StringBuilder sb = new();
         foreach (byte b in ComputeHashForUrl(inputString))
-            sb.Append(b.ToString("X2"));
+            sb.Append(b.ToString("x2"));
 
         return sb.ToString();
     }
