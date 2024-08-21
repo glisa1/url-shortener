@@ -1,6 +1,7 @@
-﻿using UrlShortener.Models;
-using UrlShortener.Persistence;
+﻿using FluentValidation;
 using UrlShortener.Utils;
+using UrlShortener.Models;
+using UrlShortener.Persistance;
 
 namespace UrlShortener;
 
@@ -14,20 +15,23 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapPostEndpoints(this WebApplication app)
     {
-        app.MapPost("/shortenurl", (ShortenUrlRequest request, HttpContext context) =>
+        app.MapPost("/shortenurl", 
+            (
+                ShortenUrlRequest request,
+                HttpContext context,
+                IRedisService redisService,
+                IValidator<ShortenUrlRequest> validator
+            ) =>
         {
             // Should inject the validator
             // Exceptions
             // Async
-            var validator = new ShortenUrlRequestValidator();
             var validationResult = validator.Validate(request);
 
             if (!validationResult.IsValid)
             {
                 return Results.ValidationProblem(validationResult.ToDictionary());
             }
-
-            var redisService = new RedisService();
 
             var urlHash = HashComputer.GetHashString(request.Url);
             var hashedValue = urlHash.Substring(0, 6);
@@ -45,14 +49,12 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
-        app.MapGet("/shortenedurl", (string url) =>
+        app.MapGet("/shortenedurl", (string url, IRedisService redisService) =>
         {
             if (string.IsNullOrWhiteSpace(url))
             {
                 return Results.BadRequest("Url was empty.");
             }
-
-            var redisService = new RedisService();
 
             var response = redisService.GetValue(url);
 

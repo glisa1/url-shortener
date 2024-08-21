@@ -1,9 +1,9 @@
 ﻿using ServiceStack.Redis;
 using UrlShortener.Models;
 
-namespace UrlShortener.Persistence;
+namespace UrlShortener.Persistance;
 
-public class RedisService
+public class RedisService : IRedisService
 {
     private readonly RedisManagerPool _manager;
 
