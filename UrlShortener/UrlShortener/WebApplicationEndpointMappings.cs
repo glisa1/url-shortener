@@ -1,4 +1,5 @@
 ﻿using UrlShortener.Models;
+using UrlShortener.Utils;
 
 namespace UrlShortener;
 
@@ -17,7 +18,9 @@ internal static class WebApplicationEndpointMappings
                 return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
-            return Results.Ok();
+            var hashedValue = HashComputer.GetHashString(request.Url);
+
+            return Results.Ok(hashedValue);
             
         })
         .WithName("ShortenUrl")
