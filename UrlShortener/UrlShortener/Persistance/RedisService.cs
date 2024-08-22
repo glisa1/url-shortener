@@ -14,6 +14,12 @@ public class RedisService : IRedisService
 
     public async Task InsertKeyAsync(string key, ShortenedUrl value, CancellationToken token = default)
     {
+        var valueInDb = await GetValueAsync(key, token);
+        if (valueInDb != null)
+        {
+            return;
+        }
+
         await using var redis = await _manager.GetClientAsync(token);
         await redis.AddAsync(key, value, token);
     }
