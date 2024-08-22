@@ -15,6 +15,8 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapPostEndpoints(this WebApplication app)
     {
+        // Logging
+        // Idempotency
         app.MapPost("/shortenurl",
             async (
                 ShortenUrlRequest request,
@@ -54,7 +56,6 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
-        // Exception handling
         app.MapGet("/shortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
         {
             try
