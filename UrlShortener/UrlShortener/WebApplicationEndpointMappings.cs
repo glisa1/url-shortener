@@ -24,22 +24,28 @@ internal static class WebApplicationEndpointMappings
                 IValidator<ShortenUrlRequest> validator
             ) =>
         {
-            // Exception handling
-            var validationResult = validator.Validate(request);
-
-            if (!validationResult.IsValid)
+            try
             {
-                return Results.ValidationProblem(validationResult.ToDictionary());
+                var validationResult = validator.Validate(request);
+
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
+
+                var urlHash = HashComputer.GetHashString(request.Url);
+                var hashedValue = urlHash[..6];
+                var shortAddress = $"http://{context.Request.Host}/{hashedValue}";
+
+                var response = new ShortenedUrl(hashedValue, request.Url, shortAddress);
+                await redisService.InsertKeyAsync(response.ShortUrl, response, token);
+
+                return Results.Ok(response);
             }
-
-            var urlHash = HashComputer.GetHashString(request.Url);
-            var hashedValue = urlHash[..6];
-            var shortAddress = $"http://{context.Request.Host}/{hashedValue}";
-
-            var response = new ShortenedUrl(hashedValue, request.Url, shortAddress);
-            await redisService.InsertKeyAsync(shortAddress, response, token);
-
-            return Results.Ok(response);
+            catch (Exception)
+            {
+                return Results.Problem();
+            }
 
         })
         .WithName("ShortenUrl")
@@ -48,16 +54,34 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
+        // Exception handling
         app.MapGet("/shortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
         {
-            if (string.IsNullOrWhiteSpace(url))
+            try
             {
-                return Results.BadRequest("Url was empty.");
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    return Results.BadRequest("Url was empty.");
+                }
+
+                if (!StringExtensions.IsLinkAUrl(url))
+                {
+                    return Results.BadRequest("Input string was not an url.");
+                }
+
+                var response = await redisService.GetValueAsync(url, token);
+
+                if (response == null)
+                {
+                    return Results.NotFound();
+                }
+
+                return Results.Ok(response);
             }
-
-            var response = await redisService.GetValueAsync(url, token);
-
-            return Results.Ok(response);
+            catch (Exception)
+            {
+                return Results.Problem();
+            }
 
         })
         .WithName("ShortenedUrl")

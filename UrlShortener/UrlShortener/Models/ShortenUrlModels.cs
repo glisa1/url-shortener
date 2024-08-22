@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using UrlShortener.Utils;
 
 namespace UrlShortener.Models;
 
@@ -18,14 +19,8 @@ internal sealed class ShortenUrlRequestValidator : AbstractValidator<ShortenUrlR
     {
         RuleFor(request => request.Url)
             .NotEmpty()
-            .Must(LinkMustBeAUri)
+            .Must(StringExtensions.IsLinkAUrl)
             .WithMessage("Input string is not a valid url value.");
-    }
-
-    private static bool LinkMustBeAUri(string link)
-    {
-        return Uri.TryCreate(link, UriKind.Absolute, out var outUri)
-               && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps);
     }
 }
 

@@ -18,6 +18,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// For empty responses
+app.UseStatusCodePages(async statusCodeContext 
+    => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
+                 .ExecuteAsync(statusCodeContext.HttpContext));
+
 app.UseHttpsRedirection();
 
 app.MapEndpoints();
