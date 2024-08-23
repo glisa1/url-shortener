@@ -29,4 +29,10 @@ public class RedisService : IRedisService
         await using var redis = await _manager.GetClientAsync(token);
         return await redis.GetAsync<ShortenedUrl>(key, token);
     }
+
+    public async Task DeleteValueAsync(string key, CancellationToken token = default)
+    {
+        await using var redis = await _manager.GetClientAsync(token);
+        await redis.RemoveAsync(key, token);
+    }
 }

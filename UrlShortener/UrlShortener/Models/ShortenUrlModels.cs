@@ -19,7 +19,7 @@ internal sealed class ShortenUrlRequestValidator : AbstractValidator<ShortenUrlR
     {
         RuleFor(request => request.Url)
             .NotEmpty()
-            .Must(StringExtensions.IsLinkAUrl)
+            .Must(StringExtensions.IsStringAUrl)
             .WithMessage("Input string is not a valid url value.");
     }
 }

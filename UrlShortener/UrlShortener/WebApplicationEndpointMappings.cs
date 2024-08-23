@@ -11,6 +11,7 @@ internal static class WebApplicationEndpointMappings
     {
         app.MapGetEndpoints();
         app.MapPostEndpoints();
+        app.MapDeleteEndpoints();
     }
 
     private static void MapPostEndpoints(this WebApplication app)
@@ -65,7 +66,7 @@ internal static class WebApplicationEndpointMappings
                     return Results.BadRequest("Url was empty.");
                 }
 
-                if (!StringExtensions.IsLinkAUrl(url))
+                if (!StringExtensions.IsStringAUrl(url))
                 {
                     return Results.BadRequest("Input string was not an url.");
                 }
@@ -77,7 +78,7 @@ internal static class WebApplicationEndpointMappings
                     return Results.NotFound();
                 }
 
-                return Results.Ok(response);
+                return Results.Redirect(response.LongUrl);
             }
             catch (Exception)
             {
@@ -87,5 +88,39 @@ internal static class WebApplicationEndpointMappings
         })
         .WithName("ShortenedUrl")
         .WithOpenApi();
+    }
+
+    private static void MapDeleteEndpoints(this WebApplication app)
+    {
+        app.MapDelete("/deleteshortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    return Results.BadRequest("Url was empty.");
+                }
+
+                if (!StringExtensions.IsStringAUrl(url))
+                {
+                    return Results.BadRequest("Input string was not an url.");
+                }
+
+                var response = await redisService.GetValueAsync(url, token);
+
+                if (response == null)
+                {
+                    return Results.NotFound();
+                }
+
+                await redisService.DeleteValueAsync(url, token);
+
+                return Results.Ok();
+            }
+            catch (Exception)
+            {
+                return Results.Problem();
+            }
+        });
     }
 }
