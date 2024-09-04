@@ -7,9 +7,9 @@ public class RedisService : IRedisService
 {
     private readonly RedisManagerPool _manager;
 
-    public RedisService()
+    public RedisService(string redisAddress = "localhost:6379")
     {
-        _manager = new RedisManagerPool("localhost:6379");
+        _manager = new RedisManagerPool(redisAddress);
     }
 
     public async Task InsertKeyAsync(string key, ShortenedUrl value, CancellationToken token = default)
