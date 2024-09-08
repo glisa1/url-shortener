@@ -3,7 +3,7 @@ using UrlShortener.Models;
 
 namespace UrlShortener.Persistance;
 
-public class RedisService : IRedisService
+public class RedisService : IPersistanceService
 {
     private readonly RedisManagerPool _manager;
 

@@ -9,6 +9,6 @@ public static class ServiceExtensions
     public static void RegisterServices(this IServiceCollection services)
     {
         services.AddScoped<IValidator<ShortenUrlRequest>, ShortenUrlRequestValidator>();
-        services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<IPersistanceService, RedisService>();
     }
 }

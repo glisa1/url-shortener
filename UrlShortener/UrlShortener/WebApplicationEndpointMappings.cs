@@ -23,7 +23,7 @@ internal static class WebApplicationEndpointMappings
                 ShortenUrlRequest request,
                 CancellationToken token,
                 HttpContext context,
-                IRedisService redisService,
+                IPersistanceService redisService,
                 IValidator<ShortenUrlRequest> validator
             ) =>
         {
@@ -57,7 +57,7 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
-        app.MapGet("/shortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
+        app.MapGet("/shortenedurl", async (string url, IPersistanceService redisService, CancellationToken token) =>
         {
             try
             {
@@ -92,7 +92,7 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapDeleteEndpoints(this WebApplication app)
     {
-        app.MapDelete("/deleteshortenedurl", async (string url, IRedisService redisService, CancellationToken token) =>
+        app.MapDelete("/deleteshortenedurl", async (string url, IPersistanceService redisService, CancellationToken token) =>
         {
             try
             {

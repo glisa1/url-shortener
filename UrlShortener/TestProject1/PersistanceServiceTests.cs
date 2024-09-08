@@ -5,10 +5,10 @@ using UrlShortener.Persistance;
 
 namespace TestProject1
 {
-    public class RedisServiceTests : IClassFixture<RedisServiceTestsFixture>
+    public class PersistanceServiceTests : IClassFixture<RedisServiceTestsFixture>
     {
         private readonly RedisServiceTestsFixture _fixture;
-        public RedisServiceTests(RedisServiceTestsFixture fixture)
+        public PersistanceServiceTests(RedisServiceTestsFixture fixture)
         {
             _fixture = fixture;
         }
@@ -37,7 +37,7 @@ namespace TestProject1
         private const int DefaultRedisPort = 6379;
 
         private readonly IContainer redisTestInstance;
-        public readonly IRedisService _redisService;
+        public readonly IPersistanceService _redisService;
 
         public RedisServiceTestsFixture()
         {
