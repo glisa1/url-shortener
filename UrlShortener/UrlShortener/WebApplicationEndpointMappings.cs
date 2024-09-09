@@ -68,7 +68,7 @@ internal static class WebApplicationEndpointMappings
 
                 if (!StringExtensions.IsStringAUrl(url))
                 {
-                    return Results.BadRequest("Input string was not an url.");
+                    return Results.BadRequest("Input string is not a valid url value.");
                 }
 
                 var response = await redisService.GetValueAsync(url, token);
@@ -103,7 +103,7 @@ internal static class WebApplicationEndpointMappings
 
                 if (!StringExtensions.IsStringAUrl(url))
                 {
-                    return Results.BadRequest("Input string was not an url.");
+                    return Results.BadRequest("Input string is not a valid url value.");
                 }
 
                 var response = await redisService.GetValueAsync(url, token);

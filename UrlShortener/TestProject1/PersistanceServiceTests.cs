@@ -3,7 +3,7 @@ using Testcontainers.Redis;
 using UrlShortener.Models;
 using UrlShortener.Persistance;
 
-namespace TestProject1
+namespace UrlShortener.Tests
 {
     public class PersistanceServiceTests : IClassFixture<RedisServiceTestsFixture>
     {
