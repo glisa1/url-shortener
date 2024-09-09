@@ -1,5 +1,4 @@
-﻿using DotNet.Testcontainers.Containers;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -68,6 +67,36 @@ namespace UrlShortener.Tests.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
             Assert.NotNull(shortenedUrl);
             Assert.Equal(url, shortenedUrl.LongUrl);
+        }
+
+        [Fact]
+        public async Task DeletingShorenedUrl_Fails_UrlNotExisting()
+        {
+            const string url = "http://non-existing-url.com";
+            var client = _builder.CreateClient();
+
+            var response = await client.DeleteAsync($"/deleteshortenedurl?url={url}");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeletingShortenedUrl_Passes_PersistedUrlDeleted()
+        {
+            const string url = "http://url-to-be-deleted.com";
+            var client = _builder.CreateClient();
+
+            var postResponse = await client.PostAsJsonAsync("/shortenurl", new ShortenUrlRequest(url));
+            var postResponseObject = await postResponse.Content.ReadAsStringAsync();
+
+            var shortenedUrl = JsonConvert.DeserializeObject<ShortenedUrl>(postResponseObject);
+
+            var deleteResponse = await client.DeleteAsync($"/deleteshortenedurl?url={shortenedUrl.ShortUrl}");
+
+            Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+            Assert.NotNull(shortenedUrl);
+            Assert.Equal(url, shortenedUrl.LongUrl);
+            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
         public ValueTask DisposeAsync() => redisTestInstance.DisposeAsync();
