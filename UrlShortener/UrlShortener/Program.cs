@@ -1,3 +1,4 @@
+using Serilog;
 using UrlShortener;
 using UrlShortener.Configuration;
 

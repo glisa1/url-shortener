@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Serilog;
 using UrlShortener.Models;
 using UrlShortener.Persistance;
 
@@ -10,5 +11,6 @@ public static class ServiceExtensions
     {
         services.AddScoped<IValidator<ShortenUrlRequest>, ShortenUrlRequestValidator>();
         services.AddSingleton<IPersistanceService, RedisService>();
+        services.AddSingleton<Serilog.ILogger>(new LoggerConfiguration().WriteTo.Console().CreateLogger());
     }
 }

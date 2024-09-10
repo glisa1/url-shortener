@@ -16,15 +16,15 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapPostEndpoints(this WebApplication app)
     {
-        // Logging
-        // Idempotency
         app.MapPost("/shortenurl",
-            async (
+            async 
+            (
                 ShortenUrlRequest request,
-                CancellationToken token,
                 HttpContext context,
                 IPersistanceService redisService,
-                IValidator<ShortenUrlRequest> validator
+                IValidator<ShortenUrlRequest> validator,
+                Serilog.ILogger logger,
+                CancellationToken token
             ) =>
         {
             try
@@ -45,8 +45,9 @@ internal static class WebApplicationEndpointMappings
 
                 return Results.Ok(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.Error(ex, "Unexpected error");
                 return Results.Problem();
             }
 
@@ -57,7 +58,14 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapGetEndpoints(this WebApplication app)
     {
-        app.MapGet("/shortenedurl", async (string url, IPersistanceService redisService, CancellationToken token) =>
+        app.MapGet("/shortenedurl",
+            async 
+            (
+                string url,
+                IPersistanceService redisService,
+                Serilog.ILogger logger,
+                CancellationToken token
+            ) =>
         {
             try
             {
@@ -80,8 +88,9 @@ internal static class WebApplicationEndpointMappings
 
                 return Results.Redirect(response.LongUrl);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.Error(ex, "Unexpected error");
                 return Results.Problem();
             }
 
@@ -92,7 +101,14 @@ internal static class WebApplicationEndpointMappings
 
     private static void MapDeleteEndpoints(this WebApplication app)
     {
-        app.MapDelete("/deleteshortenedurl", async (string url, IPersistanceService redisService, CancellationToken token) =>
+        app.MapDelete("/deleteshortenedurl", 
+            async 
+            (
+                string url,
+                IPersistanceService redisService,
+                Serilog.ILogger logger,
+                CancellationToken token
+            ) =>
         {
             try
             {
@@ -117,8 +133,9 @@ internal static class WebApplicationEndpointMappings
 
                 return Results.Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.Error(ex, "Unexpected error");
                 return Results.Problem();
             }
         });
