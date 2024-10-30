@@ -1,0 +1,13 @@
+services:
+  urlshortener:
+    image: ${DOCKER_REGISTRY-}urlshortener
+    build:
+      context: .
+      dockerfile: UrlShortener/Dockerfile
+
+  redisinstance:
+    image: redis:latest
+    container_name: redis_latest
+    restart: always
+    ports:
+      - '6379:6397'

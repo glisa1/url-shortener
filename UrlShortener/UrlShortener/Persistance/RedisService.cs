@@ -7,7 +7,7 @@ public class RedisService : IPersistanceService
 {
     private readonly RedisManagerPool _manager;
 
-    public RedisService(string redisAddress = "localhost:6379")
+    public RedisService(string redisAddress = "redisinstance:6379")
     {
         _manager = new RedisManagerPool(redisAddress);
     }
